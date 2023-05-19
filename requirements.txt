@@ -1,3 +1,4 @@
 opencv-python-headless==4.6.0.66
 Pillow==9.4.0
 dropbox==11.36.0
+pandas==1.5.3

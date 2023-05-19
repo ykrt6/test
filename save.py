@@ -3,23 +3,30 @@ import cv2
 import datetime
 import time
 from PIL import Image
+import io
+import pandas as pd
 
 # import speech_recognition as sr
 
 import dropbox
+from dropbox import DropboxOAuth2FlowNoRedirect
 
-def linkDropbox() :
-    dropbox_access_token="sl.BePulhajdb7X1pfNx2IL6-eNl7VDMTQeQUQNwX0l3c-XHefFFL5CAeAxDF0ZFOeG78jZ0AeRvruN_GPcxglBF8hyXLv_9SA6GZeGrlgTdoCX3g0t5X8rCMqvP6JvRkPWdV9bCG0"
+def linkDropbox(app_key, app_secret, refresh_token) :
+    rdbx = dropbox.Dropbox(oauth2_refresh_token=refresh_token, app_key=app_key, app_secret=app_secret)
+
+    rdbx.refresh_access_token()
+
+    dropbox_access_token= rdbx._oauth2_access_token
 
     client = dropbox.Dropbox(dropbox_access_token, timeout=300)
-    st.write("ドロップボックスアカウントがリンクされました")
+    st.success("ドロップボックスアカウントがリンクされました")
     return client
 
 def uploadDropbox(img, filename, client) :
     dropbox_path="/test/" + filename
 
     client.files_upload(img, dropbox_path)
-    st.write(filename + "をアップロードしました")
+    st.success(filename + "をアップロードしました")
 
 # def record() :
 #     listener = sr.Recognizer()
@@ -41,10 +48,25 @@ def capter(cap, image_loc) -> Image :
 
     return img
 
-def main() :
-    # dropbox とリンク付け
-    client = linkDropbox()
+def fileProcess() -> str :
+    uploaded_file = st.file_uploader("ファイルアップロード", type='csv')
+    if uploaded_file is not None:
+        # アップロードファイルをメインにデータ表示
+        df = pd.read_csv(uploaded_file, encoding="shift-jis", header=None)
+        if st.checkbox("データファイルの内容を表示") :    
+            st.table(df)
+    else :
+        st.warning("データファイルをアップロードしてください")
+        st.stop()
+        
+    app_key = df.loc[0,1]
+    app_secret = df.loc[1,1]
+    refresh_token = df.loc[2,1]
 
+    return app_key, app_secret, refresh_token
+
+
+def main(client) :
     # キャプチャーの準備
     cap = cv2.VideoCapture(0)
     image_loc = st.empty()
@@ -59,21 +81,28 @@ def main() :
     elif option == "save" :
         filename = datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.jpg'
         img = capter(cap, image_loc)
-        img.save(".\\fig\\" + filename, "JPEG")
-        with open(".\\fig\\" + filename, "rb") as f :
-            image_bytes = f.read()  # バイナリ形式に変換
-        uploadDropbox(image_bytes, filename, client)    # dropboxにアップロード
-
-    # if st.checkbox("finish") :
-        # break
+        img_bytes = io.BytesIO()    # メモリ上でバイナリデータを扱う
+        img.save(img_bytes, "JPEG")     # メモリ上に保存
+        img_bytes = img_bytes.getvalue()  # バッファすべてを bytes として出力
+        uploadDropbox(img_bytes, filename, client)    # dropboxにアップロード
     
     cap.release()
     cv2.destroyAllWindows()
 
-
-
 if __name__ == "__main__" :
-    main()
+    # update_access_token = False
+    # client = ""
+
+    # App key、App secret、更新用トークンを使ってアクセルトークンの自動更新
+    app_key, app_secret, refresh_token = fileProcess()
+   
+    # dropbox とリンク付け
+    client = linkDropbox(app_key, app_secret, refresh_token)
+
+    # streamlit の仕様のため
+    main(client)
+        
+
     
     # voice_text = record()
 
