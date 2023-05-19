@@ -1,15 +1,17 @@
 import streamlit as st
+from streamlit_webrtc import webrtc_streamer
+
 import cv2
 import datetime
 import time
 from PIL import Image
 import io
 import pandas as pd
+import av
 
 # import speech_recognition as sr
 
 import dropbox
-from dropbox import DropboxOAuth2FlowNoRedirect
 
 def linkDropbox(app_key, app_secret, refresh_token) :
     rdbx = dropbox.Dropbox(oauth2_refresh_token=refresh_token, app_key=app_key, app_secret=app_secret)
@@ -40,14 +42,19 @@ def uploadDropbox(img, filename, client) :
 #     except:
 #         st.warning('sorry I could not listen')
 
+def callback(frame):
+    img = frame.to_ndarray(format="bgr24")
+
+    img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
+
+    return av.VideoFrame.from_ndarray(img, format="bgr24")
+
 def capter(cap, image_loc) -> Image :
-    while(cap.isOpened()):
-        ret, img = cap.read()
-        if img is False:
-            break
-        time.sleep(0.01)
-        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-        image_loc.image(img)
+    img = webrtc_streamer(key="example", video_frame_callback=callback)
+    # ret, img = cap.read()
+    # time.sleep(0.01)
+    # img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    # image_loc.image(img)
 
     return img
 
@@ -79,8 +86,8 @@ def main(client) :
     st.write(option + "を選択中")
     
     if option == "capter" :
-        while cap.isOpened :
-            img = capter(cap, image_loc)    # キャプチャー
+        # while cap.isOpened :
+        img = capter(cap, image_loc)    # キャプチャー
     elif option == "save" :
         filename = datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.jpg'
         img = capter(cap, image_loc)

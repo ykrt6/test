@@ -1,3 +1,5 @@
+streamlit==1.21.0
+streamlit-webrtc==0.45.0
 opencv-python-headless==4.6.0.66
 Pillow==9.4.0
 dropbox==11.36.0
