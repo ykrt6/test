@@ -97,7 +97,7 @@ def main(client) :
         uploadDropbox(img_bytes, filename, client)    # dropboxにアップロード
     
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 if __name__ == "__main__" :
     # update_access_token = False
