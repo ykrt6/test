@@ -41,10 +41,13 @@ def uploadDropbox(img, filename, client) :
 #         st.warning('sorry I could not listen')
 
 def capter(cap, image_loc) -> Image :
-    ret, img = cap.read()
-    time.sleep(0.01)
-    img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    image_loc.image(img)
+    while(cap.isOpened()):
+        ret, img = cap.read()
+        if img is False:
+            break
+        time.sleep(0.01)
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        image_loc.image(img)
 
     return img
 
