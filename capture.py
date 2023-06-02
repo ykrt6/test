@@ -48,7 +48,7 @@ class VideoProcessor:
             img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
             self.save(img)
             img = np.array(img)
-            img = av.VideoFrame.from_ndarray(img)
+            img = av.VideoFrame.from_ndarray(img, format="rgb24")
         else :
             img = av.VideoFrame.from_ndarray(img, format="bgr24")
 
@@ -88,12 +88,12 @@ def linkDropbox(app_key, app_secret, refresh_token) :
 
 
 ## メイン
-def main(client) :
+def main() :
     # キャプチャーの準備
     # cap = cv2.VideoCapture(0)
 
     # while cap.isOpened :
-    webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor)
+    webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
     if webrtc.video_processor :
         webrtc.video_processor.save_state = st.radio(label='選択してください', options=('保存しない', '保存する'), index=0, horizontal=True)
     
