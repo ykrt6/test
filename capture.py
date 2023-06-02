@@ -88,7 +88,7 @@ def linkDropbox(app_key, app_secret, refresh_token) :
 
 
 ## メイン
-def main() :
+def main(client) :
     # キャプチャーの準備
     # cap = cv2.VideoCapture(0)
 
