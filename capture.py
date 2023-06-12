@@ -93,7 +93,8 @@ def main(client) :
     # cap = cv2.VideoCapture(0)
 
     # while cap.isOpened :
-    webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
+    # webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
+    webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun:stun.services.mozilla.com"]}, {"username": ["louis@mozilla.com"]}, {"credential": ["webrtcdemo"]}]})
     # webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor)
     if webrtc.video_processor :
         webrtc.video_processor.save_state = st.radio(label='選択してください', options=('保存しない', '保存する'), index=0, horizontal=True)
