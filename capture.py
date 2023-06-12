@@ -93,8 +93,8 @@ def main(client) :
     # cap = cv2.VideoCapture(0)
 
     # while cap.isOpened :
-    # webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
-    webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun.services.mozilla.com"]}]})
+    webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
+    # webrtc = webrtc_streamer(key="example", video_processor_factory=VideoProcessor)
     if webrtc.video_processor :
         webrtc.video_processor.save_state = st.radio(label='選択してください', options=('保存しない', '保存する'), index=0, horizontal=True)
     
@@ -104,7 +104,7 @@ if __name__ == "__main__" :
     # App key、App secret、更新用トークンを使ってアクセルトークンの自動更新
     app_key, app_secret, refresh_token = fileProcess()
    
-    # dropbox とリンク付け
+    # dropbox とリンク付けs
     client = linkDropbox(app_key, app_secret, refresh_token)
 
     # streamlit の仕様のため (気にしないで)
